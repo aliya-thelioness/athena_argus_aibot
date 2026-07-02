@@ -1,40 +1,51 @@
-# Athena — EuroSchool Argus assistant
+# Athena — EuroSchool’s Personal Argus AI
 
-Athena is a dependency-free full-stack demo of a student-aware assistant embedded in the Argus learning ecosystem. It includes a Rohit-specific dashboard, marks, attendance, notices, recent notes, school almanac, conversational responses, and a Meta WhatsApp Cloud API webhook.
+Athena is an AI assistant embedded in the Argus learning ecosystem. It gives every student a private, personalised view of their school day and helps them understand their own notices, notes, tasks, marks, attendance, timetable, and almanac.
 
-## Run locally
+The current demo contains one student profile, Rohit. In production, every authenticated student would receive a separate Athena experience using only the data connected to their own Argus account. A student must never be able to access another student’s information.
 
-1. Install [Node.js 18 or newer](https://nodejs.org/).
-2. In this folder, run `npm start`.
-3. Open `http://localhost:3000`.
+## Features
 
-No `npm install` is required because the project uses only Node's built-in modules.
+- Personalised greeting and daily Athena briefing
+- Unread notice count and notice summaries
+- AI-extracted action items from school notices
+- Recent class notes with subject filters and bookmarks
+- Assignment and task tracking by status and due date
+- School almanac with events, exams, sports days, and PTMs
+- Student-specific marks, attendance, profile, and next-class answers
+- Suggested questions and conversational chat interface
+- Local NLP responses when no generative-AI key is configured
+- Claude-powered natural answers when Anthropic is enabled
+- Automatic fallback to local NLP if the AI service is unavailable
+- WhatsApp Business support through Meta’s Cloud API webhook
+- Responsive desktop and mobile interface
+- Server-side API-key handling so private credentials are never exposed to the browser
 
-## Enable generative AI
+## How Athena Works
 
-Athena works without an API key using its built-in NLP rules. To enable generative answers, create a `.env` file in this folder:
+1. A student signs in to Argus or messages EuroSchool’s WhatsApp Business number.
+2. The backend identifies the authenticated student.
+3. The student’s question is sent to Athena’s Node.js backend.
+4. Athena’s NLP routing detects whether the question concerns notices, notes, tasks, marks, attendance, timetable, profile, or calendar events.
+5. The backend retrieves only the minimum information required from that student’s Argus profile.
+6. If generative AI is enabled, the question and relevant context are sent securely to Claude. Otherwise, Athena answers through its local NLP rules.
+7. Claude is instructed to answer only from the supplied Argus information and to say when information is unavailable.
+8. The backend returns Athena’s answer to the Argus chat drawer or sends it through Meta to the student’s WhatsApp conversation.
 
-```env
-ANTHROPIC_API_KEY=your_api_key_here
-ANTHROPIC_MODEL=claude-sonnet-4-6
+```text
+Student question
+      ↓
+Authenticated Argus or WhatsApp user
+      ↓
+Athena Node.js backend
+      ↓
+NLP topic detection
+      ↓
+Only that student’s relevant Argus data
+      ↓
+Local NLP or Claude
+      ↓
+Personalised answer in Argus or WhatsApp
 ```
 
-Restart the Node server after saving it. The backend detects the question topic and sends only relevant Rohit data to Claude. Never put the API key in HTML, `public/argus.js`, or any browser file.
-
-## WhatsApp Business setup
-
-1. Create a Meta developer app and add the WhatsApp product.
-2. Copy `.env.example` to `.env` and fill in the access token, phone-number ID, and a private verify token.
-3. Expose the local server over HTTPS (for example with Cloudflare Tunnel or ngrok).
-4. In Meta's WhatsApp configuration, set the callback URL to `https://your-domain/webhooks/whatsapp`, enter the same verify token, and subscribe to `messages`.
-
-Without WhatsApp credentials, webhook replies are printed to the backend console as demo messages.
-
-## API
-
-- `GET /api/dashboard` — Rohit's profile, notices, notes and holidays
-- `POST /api/chat` with `{ "message": "Show my marks" }` — personalised assistant reply
-- `POST /api/notices/:id/read` — mark a notice as read
-- `GET/POST /webhooks/whatsapp` — Meta webhook verification and inbound messages
-
-The demo assistant is deterministic and keeps all student data in `data.js`. For production, replace it with authenticated Argus services, a database, per-user access controls, and an approved language-model provider.
+Athena does not store a separate copy of every student’s information inside the AI model. Argus remains the trusted source of student data, and the backend retrieves current information when a question is asked. The production version should enforce authentication, phone-number verification, per-student access controls, data minimisation, encryption, audit logging, and school privacy policies.
