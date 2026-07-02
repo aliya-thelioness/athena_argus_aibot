@@ -4,6 +4,10 @@ Athena is an AI assistant embedded in the Argus learning ecosystem. It gives eve
 
 The current demo contains one student profile, Rohit. In production, every authenticated student would receive a separate Athena experience using only the data connected to their own Argus account. A student must never be able to access another student’s information.
 
+This currently uses rule-based machine learning but it has the code to be implement generatve AI as well so we just need an api key of the chatbots like OPENAI and CLAUDE and we are all set.
+
+Also note- the backen of Athena currently has the information of only one student and will be able to implement more once more student informatino is loaded onto the page. 
+
 ## Features
 
 - Personalised greeting and daily Athena briefing
@@ -29,7 +33,7 @@ The current demo contains one student profile, Rohit. In production, every authe
 4. Athena’s NLP routing detects whether the question concerns notices, notes, tasks, marks, attendance, timetable, profile, or calendar events.
 5. The backend retrieves only the minimum information required from that student’s Argus profile.
 6. If generative AI is enabled, the question and relevant context are sent securely to Claude. Otherwise, Athena answers through its local NLP rules.
-7. Claude is instructed to answer only from the supplied Argus information and to say when information is unavailable.
+7. Claude is instructed to answer only from the supplied Argus information and to say when information is unavailable or doesnt exist.
 8. The backend returns Athena’s answer to the Argus chat drawer or sends it through Meta to the student’s WhatsApp conversation.
 
 ```text
