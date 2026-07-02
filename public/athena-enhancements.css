@@ -1,0 +1,232 @@
+body {
+  background:
+    radial-gradient(circle at 85% 0, #ededff 0, transparent 27%), var(--bg);
+}
+
+button {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+.home-notice,
+.mini-note,
+.notice-card,
+.note-card,
+.task-row {
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+.home-notice:hover,
+.mini-note:hover,
+.notice-card:hover,
+.note-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(35, 42, 89, 0.09);
+  border-color: #d7d9ed;
+}
+
+.athena-summary {
+  isolation: isolate;
+  background:
+    linear-gradient(115deg, #fff 12%, #faf9ff 58%, #f1f0ff) padding-box,
+    linear-gradient(120deg, #8f93ff, #d3bdfb, #777be0) border-box;
+  box-shadow: 0 18px 50px rgba(91, 95, 199, 0.1);
+}
+
+.athena-summary::after {
+  display: none;
+}
+.athena-glow {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.45;
+  z-index: -1;
+}
+.glow-one {
+  width: 180px;
+  height: 180px;
+  background: #dcd5ff;
+  right: -45px;
+  top: -80px;
+}
+.glow-two {
+  width: 90px;
+  height: 90px;
+  background: #d2f2ff;
+  right: 150px;
+  bottom: -55px;
+}
+.athena-star {
+  animation: star-float 3s ease-in-out infinite;
+  box-shadow: 0 8px 22px rgba(91, 95, 199, 0.18);
+}
+
+@keyframes star-float {
+  50% {
+    transform: translateY(-4px) rotate(5deg);
+  }
+}
+
+.brief-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+.ai-status {
+  font-size: 9px;
+  color: #777c91;
+  background: #f0f1f7;
+  border-radius: 99px;
+  padding: 6px 9px;
+}
+.ai-status.live {
+  color: #19784c;
+  background: #e9f8f0;
+}
+
+.athena-fab {
+  background: linear-gradient(135deg, #5256be, #777be0);
+  overflow: hidden;
+}
+.athena-fab::before {
+  content: "";
+  position: absolute;
+  inset: -100% 55% -100% -25%;
+  background: rgba(255, 255, 255, 0.18);
+  transform: rotate(25deg);
+  transition: 450ms;
+}
+.athena-fab:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 17px 42px rgba(64, 67, 160, 0.47);
+}
+.athena-fab:hover::before {
+  transform: translateX(220%) rotate(25deg);
+}
+
+.athena-drawer {
+  width: 420px;
+  background: linear-gradient(#fff, #fbfbff);
+}
+.athena-drawer > header {
+  background: linear-gradient(130deg, #171c39, #2e3564);
+  position: relative;
+  overflow: hidden;
+}
+.athena-drawer > header::after {
+  content: "✦";
+  position: absolute;
+  right: 72px;
+  top: -29px;
+  font-size: 94px;
+  color: rgba(255, 255, 255, 0.03);
+}
+.sparkle {
+  background: linear-gradient(135deg, #7478e0, #b09cf4);
+  box-shadow: 0 7px 22px rgba(11, 14, 34, 0.24);
+  animation: star-float 3s ease-in-out infinite;
+}
+.drawer-status {
+  margin-left: auto;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  color: #c8cbe2;
+  border-radius: 99px;
+  padding: 5px 8px;
+  font-size: 8px;
+  white-space: nowrap;
+}
+.drawer-status.live {
+  color: #aef0cb;
+  border-color: rgba(113, 213, 157, 0.33);
+  background: rgba(53, 167, 106, 0.13);
+}
+.athena-drawer header button {
+  margin-left: 0 !important;
+  position: relative;
+  z-index: 2;
+}
+.athena-drawer header #clearChat {
+  font-size: 18px;
+  color: #bfc3d9;
+}
+
+.conversation-starters {
+  background: #fafbfe;
+  padding: 8px 14px 12px;
+}
+.conversation-starters > span {
+  display: block;
+  color: #969aac;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 7px;
+}
+.conversation-starters .suggestions {
+  padding: 0;
+  background: transparent;
+}
+.suggestions button:hover {
+  background: var(--soft);
+  transform: translateY(-1px);
+}
+.message {
+  animation: message-in 220ms ease;
+}
+.message.bot {
+  box-shadow: 0 5px 16px rgba(37, 43, 79, 0.04);
+}
+.message.user {
+  background: linear-gradient(135deg, #5559bf, #7377d8);
+  box-shadow: 0 7px 18px rgba(91, 95, 199, 0.17);
+}
+
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+}
+
+.typing i {
+  animation: typing-bounce 900ms infinite alternate;
+}
+.typing i:nth-child(2) {
+  animation-delay: 150ms;
+}
+.typing i:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes typing-bounce {
+  to {
+    transform: translateY(-5px);
+    opacity: 0.4;
+  }
+}
+
+@media (max-width: 600px) {
+  .brief-footer {
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .ai-status {
+    max-width: 175px;
+  }
+  .athena-drawer {
+    width: 100%;
+  }
+}

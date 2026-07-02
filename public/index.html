@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Argus | EuroSchool</title>
+    <meta name="theme-color" content="#1a1f3c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/argus.css" />
+    <link rel="stylesheet" href="/athena-enhancements.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="logo" href="#home" aria-label="EuroSchool"
+        ><span>✦</span><b>ARGUS</b></a
+      >
+      <nav aria-label="Main navigation">
+        <button class="nav-item active" data-screen="home" title="Home">
+          <span>⌂</span><b>Home</b>
+        </button>
+        <button class="nav-item" data-screen="notes" title="Notes">
+          <span>▤</span><b>Notes</b>
+        </button>
+        <button class="nav-item" data-screen="notices" title="Notice Board">
+          <span>◉</span><b>Notice Board</b><i id="navBadge">3</i>
+        </button>
+        <button class="nav-item" data-screen="almanac" title="Almanac">
+          <span>□</span><b>Almanac</b>
+        </button>
+        <button class="nav-item" data-screen="tasks" title="Tasks">
+          <span>✓</span><b>Tasks</b>
+        </button>
+      </nav>
+      <div class="sidebar-avatar">RS</div>
+    </aside>
+
+    <div class="shell">
+      <header class="topbar">
+        <div><span>Hi,</span><strong id="studentName">Rohit 👋</strong></div>
+        <button class="top-athena open-athena">
+          <span>✨</span> Ask Athena
+        </button>
+      </header>
+      <main>
+        <section class="screen active" id="screen-home">
+          <div class="page-title">
+            <p>Wednesday, 25 June</p>
+            <h1>Your Day</h1>
+            <span>Everything that needs your attention, in one place.</span>
+          </div>
+          <article class="athena-summary card">
+            <div class="athena-glow glow-one"></div>
+            <div class="athena-glow glow-two"></div>
+            <div class="athena-label">
+              <span class="athena-star">✨</span>
+              <div>
+                <small>ATHENA'S BRIEF</small>
+                <h2>Here’s what matters today</h2>
+              </div>
+            </div>
+            <ul id="athenaBrief"></ul>
+            <div class="brief-footer">
+              <span id="aiStatus" class="ai-status">Checking Athena…</span
+              ><button class="text-button open-athena">
+                Ask Athena anything <span>→</span>
+              </button>
+            </div>
+          </article>
+          <section class="section-block">
+            <div class="section-head">
+              <div>
+                <h2>Today’s Notices</h2>
+                <p>Important updates selected for you</p>
+              </div>
+              <button class="text-button go-screen" data-screen="notices">
+                View notice board →
+              </button>
+            </div>
+            <div class="home-notices" id="homeNotices"></div>
+          </section>
+          <section class="section-block">
+            <div class="section-head">
+              <div>
+                <h2>Recent Notes</h2>
+                <p>Fresh from your teachers</p>
+              </div>
+              <button class="text-button go-screen" data-screen="notes">
+                View all notes →
+              </button>
+            </div>
+            <div class="notes-row" id="homeNotes"></div>
+          </section>
+        </section>
+
+        <section class="screen" id="screen-notices">
+          <div class="page-title">
+            <p>School updates</p>
+            <h1>Notice Board</h1>
+            <span>Announcements, circulars and actions for you.</span>
+          </div>
+          <div class="notice-board" id="noticeBoard"></div>
+        </section>
+
+        <section class="screen" id="screen-almanac">
+          <div class="page-title calendar-heading">
+            <div>
+              <p>School calendar</p>
+              <h1>Almanac</h1>
+              <span>Events, activities and important dates.</span>
+            </div>
+            <div class="month-controls">
+              <button aria-label="Previous month">‹</button
+              ><strong>June 2026</strong
+              ><button aria-label="Next month">›</button>
+            </div>
+          </div>
+          <div class="calendar card">
+            <div class="weekdays">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span
+              ><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+          </div>
+          <div class="next-events card">
+            <h3>Coming up in July</h3>
+            <div id="julyEvents"></div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-notes">
+          <div class="page-title">
+            <p>Your learning library</p>
+            <h1>Class Notes</h1>
+            <span>Everything your teachers have shared.</span>
+          </div>
+          <div class="filter-tabs" id="noteFilters"></div>
+          <div class="notes-grid" id="notesGrid"></div>
+        </section>
+
+        <section class="screen" id="screen-tasks">
+          <div class="page-title">
+            <p>Assignments & assessments</p>
+            <h1>Tasks</h1>
+            <span>Stay clear on what’s due next.</span>
+          </div>
+          <div class="filter-tabs" id="taskFilters"></div>
+          <div class="task-list card" id="taskList"></div>
+        </section>
+      </main>
+    </div>
+
+    <button
+      id="athenaLauncher"
+      class="athena-fab open-athena"
+      aria-label="Open Athena"
+    >
+      <span>✨</span><b>Athena</b>
+    </button>
+    <div id="drawerBackdrop" class="drawer-backdrop"></div>
+    <aside id="athenaDrawer" class="athena-drawer" aria-hidden="true">
+      <header>
+        <div class="sparkle">✨</div>
+        <div>
+          <h2>Athena</h2>
+          <p>Your curious Argus companion</p>
+        </div>
+        <span id="drawerAiStatus" class="drawer-status">Local</span
+        ><button id="clearChat" aria-label="Clear chat" title="Clear chat">
+          ↻</button
+        ><button id="closeAthena" aria-label="Close Athena">×</button>
+      </header>
+      <div class="ai-context">
+        <span>●</span> Personalised for Rohit · Argus data only
+      </div>
+      <div id="messages" class="messages"></div>
+      <div class="conversation-starters">
+        <span>Try asking</span>
+        <div id="suggestions" class="suggestions">
+          <button>📌 What is due next?</button
+          ><button>✨ Plan my school day</button
+          ><button>📣 Summarise my notices</button
+          ><button>📚 Show recent notes</button>
+        </div>
+      </div>
+      <form id="chatForm">
+        <textarea
+          id="messageInput"
+          rows="1"
+          placeholder="Ask about your school day…"
+          aria-label="Message Athena"
+        ></textarea
+        ><button type="submit" aria-label="Send">↑</button
+        ><small>Athena can make mistakes. Check important information.</small>
+      </form>
+    </aside>
+    <script src="/argus.js"></script>
+  </body>
+</html>
