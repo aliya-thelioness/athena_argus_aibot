@@ -53,7 +53,17 @@
             <h1>Your Day</h1>
             <span>Everything that needs your attention, in one place.</span>
           </div>
-          <article class="athena-summary card">
+          <div class="layout-toolbar card">
+            <div>
+              <strong>Make Your Day yours</strong>
+              <span>Rearrange the information that matters most to you.</span>
+            </div>
+            <button id="customizeLayout" class="customize-layout" type="button" aria-pressed="false">
+              <span>⚙</span> Customize Layout
+            </button>
+          </div>
+          <div id="homeWidgets" class="home-widgets">
+          <article class="athena-summary card home-widget" data-widget="athena" data-widget-title="Athena Recommendations">
             <div class="athena-glow glow-one"></div>
             <div class="athena-glow glow-two"></div>
             <div class="athena-label">
@@ -71,7 +81,7 @@
               </button>
             </div>
           </article>
-          <section class="section-block">
+          <section class="section-block home-widget" data-widget="notices" data-widget-title="Notices">
             <div class="section-head">
               <div>
                 <h2>Today’s Notices</h2>
@@ -83,7 +93,7 @@
             </div>
             <div class="home-notices" id="homeNotices"></div>
           </section>
-          <section class="section-block">
+          <section class="section-block home-widget" data-widget="notes" data-widget-title="Notes">
             <div class="section-head">
               <div>
                 <h2>Recent Notes</h2>
@@ -95,6 +105,21 @@
             </div>
             <div class="notes-row" id="homeNotes"></div>
           </section>
+          <section class="section-block home-widget" data-widget="tests" data-widget-title="Upcoming Tests">
+            <div class="section-head">
+              <div><h2>Upcoming Tests</h2><p>Your next academic deadlines</p></div>
+              <button class="text-button go-screen" data-screen="tasks">View all tasks →</button>
+            </div>
+            <div class="home-tests" id="homeTests"></div>
+          </section>
+          <section class="section-block home-widget" data-widget="events" data-widget-title="Almanac Events">
+            <div class="section-head">
+              <div><h2>Almanac Events</h2><p>Dates worth keeping on your radar</p></div>
+              <button class="text-button go-screen" data-screen="almanac">Open almanac →</button>
+            </div>
+            <div class="home-events card" id="homeEvents"></div>
+          </section>
+          </div>
         </section>
 
         <section class="screen" id="screen-notices">

@@ -65,6 +65,102 @@ function renderHome() {
         </article>`,
     )
     .join("");
+
+  $("#homeTests").innerHTML = data.tasks
+    .slice(0, 3)
+    .map(
+      (task) => `
+        <article class="test-card">
+          <i class="subject-dot" style="background:${task.color}"></i>
+          <div><small>${escapeHtml(task.subject)}</small><strong>${escapeHtml(task.title)}</strong></div>
+          <span>${escapeHtml(task.due)}</span>
+        </article>`,
+    )
+    .join("");
+
+  $("#homeEvents").innerHTML = data.events
+    .slice(0, 5)
+    .map((event) => {
+      const date = new Date(`${event.date}T00:00:00`);
+      return `
+        <article class="home-event">
+          <div class="event-date"><strong>${date.getDate()}</strong><span>${date.toLocaleString("en", { month: "short" })}</span></div>
+          <div><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(event.type)}</small></div>
+        </article>`;
+    })
+    .join("");
+}
+
+const layoutStorageKey = () => `athena-home-layout-${data.student.id}`;
+
+function addWidgetControls() {
+  $$(".home-widget").forEach((widget) => {
+    if (widget.querySelector(".widget-controls")) return;
+    const controls = document.createElement("div");
+    controls.className = "widget-controls";
+    controls.setAttribute("aria-label", `Move ${widget.dataset.widgetTitle}`);
+    controls.innerHTML = `
+      <span>${escapeHtml(widget.dataset.widgetTitle)}</span>
+      <button type="button" data-move="up" aria-label="Move ${escapeHtml(widget.dataset.widgetTitle)} up">↑ Move up</button>
+      <button type="button" data-move="down" aria-label="Move ${escapeHtml(widget.dataset.widgetTitle)} down">↓ Move down</button>`;
+    widget.prepend(controls);
+  });
+  updateWidgetControls();
+}
+
+function updateWidgetControls() {
+  const widgets = $$("#homeWidgets > .home-widget");
+  widgets.forEach((widget, index) => {
+    widget.querySelector('[data-move="up"]').disabled = index === 0;
+    widget.querySelector('[data-move="down"]').disabled = index === widgets.length - 1;
+  });
+}
+
+function saveWidgetOrder() {
+  const order = $$("#homeWidgets > .home-widget").map((widget) => widget.dataset.widget);
+  localStorage.setItem(layoutStorageKey(), JSON.stringify(order));
+}
+
+function restoreWidgetOrder() {
+  try {
+    const order = JSON.parse(localStorage.getItem(layoutStorageKey()));
+    if (!Array.isArray(order)) return;
+    const container = $("#homeWidgets");
+    order.forEach((name) => {
+      const widget = container.querySelector(`[data-widget="${name}"]`);
+      if (widget) container.append(widget);
+    });
+  } catch {
+    localStorage.removeItem(layoutStorageKey());
+  }
+}
+
+function setLayoutEditing(editing) {
+  $("#homeWidgets").classList.toggle("editing", editing);
+  $("#customizeLayout").classList.toggle("active", editing);
+  $("#customizeLayout").setAttribute("aria-pressed", String(editing));
+  $("#customizeLayout").innerHTML = editing
+    ? "<span>✓</span> Done Customizing"
+    : "<span>⚙</span> Customize Layout";
+}
+
+function moveWidget(button) {
+  const widget = button.closest(".home-widget");
+  if (button.dataset.move === "up" && widget.previousElementSibling) {
+    widget.parentElement.insertBefore(widget, widget.previousElementSibling);
+  }
+  if (button.dataset.move === "down" && widget.nextElementSibling) {
+    widget.parentElement.insertBefore(widget.nextElementSibling, widget);
+  }
+  updateWidgetControls();
+  saveWidgetOrder();
+  widget.animate(
+    [
+      { transform: "scale(.985)", opacity: 0.72 },
+      { transform: "scale(1)", opacity: 1 },
+    ],
+    { duration: 220, easing: "ease-out" },
+  );
 }
 
 function renderNotices() {
@@ -267,6 +363,12 @@ document.addEventListener("click", (event) => {
   )
     setDrawer(false);
   if (event.target.closest("#clearChat")) showWelcome();
+  if (event.target.closest("#customizeLayout")) {
+    setLayoutEditing(!$("#homeWidgets").classList.contains("editing"));
+  }
+
+  const moveButton = event.target.closest(".widget-controls button");
+  if (moveButton) moveWidget(moveButton);
 
   const noteFilter = event.target.closest("#noteFilters button");
   if (noteFilter) renderNotes(noteFilter.dataset.filter);
@@ -310,6 +412,8 @@ async function init() {
     renderCalendar();
     renderNotes();
     renderTasks();
+    restoreWidgetOrder();
+    addWidgetControls();
     $("#navBadge").textContent = data.unreadCount;
     updateAiStatus();
     showWelcome();

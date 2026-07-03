@@ -2,6 +2,8 @@
 
 Athena is an AI assistant embedded in the Argus learning ecosystem. It gives every student a private, personalised view of their school day and helps them understand their own notices, notes, tasks, marks, attendance, timetable, and almanac.
 
+Athena can also be integrated with WhatsApp, giving students and parents faster, more convenient access to personalised school support wherever they already communicate.
+
 The current demo contains one student profile, Rohit. In production, every authenticated student would receive a separate Athena experience using only the data connected to their own Argus account. A student must never be able to access another student’s information.
 
 This currently uses rule-based machine learning but it has the code to be implement generatve AI as well so we just need an api key of the chatbots like OPENAI and CLAUDE and we are all set.
