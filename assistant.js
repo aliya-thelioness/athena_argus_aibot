@@ -37,61 +37,68 @@ function localAnswer(input) {
     return `You’re ${student.fullName}, ${student.class} at ${student.campus}. Your student ID is ${student.id}.`;
   if (/help|what can you/.test(q))
     return "I can help with your marks, attendance, notices, recent notes, upcoming holidays, profile and next class. Try asking “How did I do in maths?”";
-  return "Sorry kindly type correctly";
+  return "I couldn’t find that in your Argus information. I can help with marks, attendance, notices, notes, tasks, classes, and school events. Try asking me about one of those.";
 }
 
-function selectContext(input) {
-  const q = clean(input).toLowerCase();
-  const context = {
-    profile: {
+const STUDENT_DATA_TOOL = {
+  name: "get_student_data",
+  description:
+    "Retrieve only the authenticated student's Argus information needed to answer the question. Select the smallest relevant set of categories.",
+  input_schema: {
+    type: "object",
+    properties: {
+      categories: {
+        type: "array",
+        description: "The student data categories required for the answer.",
+        items: {
+          type: "string",
+          enum: [
+            "profile",
+            "marks",
+            "attendance",
+            "notices",
+            "notes",
+            "tasks",
+            "events",
+            "holidays",
+            "next_class",
+          ],
+        },
+        minItems: 1,
+        uniqueItems: true,
+      },
+    },
+    required: ["categories"],
+    additionalProperties: false,
+  },
+};
+
+function getStudentData(categories = []) {
+  const allowed = new Set(categories);
+  const result = {};
+
+  if (allowed.has("profile")) {
+    result.profile = {
       id: student.id,
       firstName: student.firstName,
       fullName: student.fullName,
       class: student.class,
       campus: student.campus,
-    },
-  };
+    };
+  }
+  if (allowed.has("marks")) result.marks = student.marks;
+  if (allowed.has("attendance")) result.attendance = student.attendance;
+  if (allowed.has("notices")) result.notices = notices;
+  if (allowed.has("notes")) result.notes = notes;
+  if (allowed.has("tasks")) result.tasks = tasks;
+  if (allowed.has("events")) result.events = events;
+  if (allowed.has("holidays")) result.holidays = holidays;
+  if (allowed.has("next_class")) result.nextClass = student.nextClass;
 
-  if (
-    /mark|score|grade|result|perform|math|science|english|hindi|social/.test(q)
-  )
-    context.marks = student.marks;
-  if (
-    /notice|notification|announcement|unread|ptm|quiz|library|basketball/.test(
-      q,
-    )
-  )
-    context.notices = notices;
-  if (/note|material|study|practice|chapter/.test(q)) context.notes = notes;
-  if (/holiday|almanac|calendar|vacation|muharram|onam|independence/.test(q))
-    context.holidays = holidays;
-  if (/attendance|present|absent/.test(q))
-    context.attendance = student.attendance;
-  if (/task|assignment|due|worksheet|quiz|project/.test(q))
-    context.tasks = tasks;
-  if (/event|sports day|exam|ptm/.test(q)) context.events = events;
-  if (/next class|timetable|schedule|room/.test(q))
-    context.nextClass = student.nextClass;
-
-  // General questions get all demo data so Athena can still answer naturally.
-  if (Object.keys(context).length === 1)
-    Object.assign(context, {
-      attendance: student.attendance,
-      nextClass: student.nextClass,
-      marks: student.marks,
-      notices,
-      notes,
-      holidays,
-      tasks,
-      events,
-    });
-  return context;
+  return result;
 }
 
-async function generateAnswer(input) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return localAnswer(input);
-
+async function callClaude(apiKey, body) {
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -99,22 +106,69 @@ async function generateAnswer(input) {
       "anthropic-version": "2023-06-01",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
-      max_tokens: 300,
-      system:
-        "You are Athena, EuroSchool's friendly Argus assistant. Answer only from supplied student context. Be concise, age-appropriate, and protect student privacy. If the answer is absent, say you sorry kindly type correctly",
-      messages: [
-        {
-          role: "user",
-          content: `Student context:\n${JSON.stringify(selectContext(input))}\n\nStudent question: ${clean(input)}`,
-        },
-      ],
-    }),
+    body: JSON.stringify(body),
   });
-  if (!response.ok)
-    throw new Error(`Anthropic API returned ${response.status}`);
-  const result = await response.json();
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(
+      `Anthropic API returned ${response.status}: ${details.slice(0, 200)}`,
+    );
+  }
+
+  return response.json();
+}
+
+async function generateAnswer(input) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return localAnswer(input);
+
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
+  const system =
+    "You are Athena, EuroSchool's friendly Argus assistant. First understand the student's question, then use get_student_data to request only the minimum Argus data needed. Never invent school or student information. Answer concisely and age-appropriately. If the question is unrelated to Argus or the tool result does not contain the answer, respond exactly: I couldn’t find that in your Argus information. I can help with marks, attendance, notices, notes, tasks, classes, and school events. Try asking me about one of those.";
+  const messages = [{ role: "user", content: clean(input) }];
+
+  const planningResponse = await callClaude(apiKey, {
+    model,
+    max_tokens: 300,
+    system,
+    tools: [STUDENT_DATA_TOOL],
+    tool_choice: { type: "any" },
+    messages,
+  });
+
+  const toolUses = planningResponse.content.filter(
+    (block) => block.type === "tool_use" && block.name === "get_student_data",
+  );
+
+  if (!toolUses.length) {
+    return (
+      planningResponse.content
+        .filter((block) => block.type === "text")
+        .map((block) => block.text)
+        .join("\n") || localAnswer(input)
+    );
+  }
+
+  messages.push({ role: "assistant", content: planningResponse.content });
+  messages.push({
+    role: "user",
+    content: toolUses.map((toolUse) => ({
+      type: "tool_result",
+      tool_use_id: toolUse.id,
+      content: JSON.stringify(getStudentData(toolUse.input.categories)),
+    })),
+  });
+
+  const result = await callClaude(apiKey, {
+    model,
+    max_tokens: 400,
+    system,
+    tools: [STUDENT_DATA_TOOL],
+    tool_choice: { type: "none" },
+    messages,
+  });
+
   return (
     result.content
       ?.filter((block) => block.type === "text")
@@ -132,4 +186,4 @@ async function answerQuestion(input) {
   }
 }
 
-module.exports = { answerQuestion, selectContext };
+module.exports = { answerQuestion, getStudentData };

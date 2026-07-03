@@ -320,10 +320,6 @@ function showWelcome() {
 
 function updateAiStatus() {
   const isLive = Boolean(data.ai?.enabled);
-  $("#aiStatus").textContent = isLive
-    ? `● Generative AI · ${data.ai.model}`
-    : "● Smart local mode · Add an API key for GenAI";
-  $("#aiStatus").classList.toggle("live", isLive);
   $("#drawerAiStatus").textContent = isLive ? "Claude live" : "Local mode";
   $("#drawerAiStatus").classList.toggle("live", isLive);
 }

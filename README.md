@@ -32,10 +32,10 @@ Also note- the backen of Athena currently has the information of only one studen
 1. A student signs in to Argus or messages EuroSchool’s WhatsApp Business number.
 2. The backend identifies the authenticated student.
 3. The student’s question is sent to Athena’s Node.js backend.
-4. Athena’s NLP routing detects whether the question concerns notices, notes, tasks, marks, attendance, timetable, profile, or calendar events.
-5. The backend retrieves only the minimum information required from that student’s Argus profile.
-6. If generative AI is enabled, the question and relevant context are sent securely to Claude. Otherwise, Athena answers through its local NLP rules.
-7. Claude is instructed to answer only from the supplied Argus information and to say when information is unavailable or doesnt exist.
+4. When generative AI is enabled, Claude first understands the meaning of the question and requests only the required data categories through Athena’s controlled backend tool.
+5. The backend retrieves those categories from the authenticated student’s Argus profile and returns the result to Claude.
+6. Claude uses the retrieved information to generate a natural answer without receiving unrestricted access to Argus.
+7. Without an AI key, or if Claude is unavailable, Athena answers through its local rule-based NLP fallback.
 8. The backend returns Athena’s answer to the Argus chat drawer or sends it through Meta to the student’s WhatsApp conversation.
 
 ```text
@@ -45,11 +45,13 @@ Authenticated Argus or WhatsApp user
       ↓
 Athena Node.js backend
       ↓
-NLP topic detection
+Claude understands the question
       ↓
-Only that student’s relevant Argus data
+Claude requests data through a controlled tool
       ↓
-Local NLP or Claude
+Backend returns only that student’s relevant Argus data
+      ↓
+Claude generates the answer
       ↓
 Personalised answer in Argus or WhatsApp
 ```
