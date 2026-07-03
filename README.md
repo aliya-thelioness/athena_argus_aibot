@@ -6,7 +6,7 @@ The current demo contains one student profile, Rohit. In production, every authe
 
 This currently uses rule-based machine learning but it has the code to be implement generatve AI as well so we just need an api key of the chatbots like OPENAI and CLAUDE and we are all set.
 
-Also note- the backen of Athena currently has the information of only one student and will be able to implement more once more student informatino is loaded onto the page. 
+Also note- the backen of Athena currently has the information of only one student and will be able to implement more once more student information is loaded onto the page. 
 
 ## Features
 
