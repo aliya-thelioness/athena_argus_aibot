@@ -1,11 +1,11 @@
 const student = {
   id: "ES-2026-1042",
-  firstName: "Rohit",
-  fullName: "Rohit Sharma",
+  firstName: "Aliya",
+  fullName: "Aliya",
   class: "Grade 11 - Commerce",
   campus: "EuroSchool HSR",
   attendance: 94,
-  profileImage: "RS",
+  profileImage: "A",
   nextClass: { subject: "Accountancy", time: "10:30 AM", room: "Room 302" },
   marks: [
     { subject: "Accountancy", score: 92, total: 100, grade: "A1", trend: "+4" },
